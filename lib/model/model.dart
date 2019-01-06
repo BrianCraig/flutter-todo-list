@@ -14,11 +14,11 @@ class Todo {
 }
 
 class TodoCategory {
-  ObservableList<Todo> todos = new List();
+  ObservableList<Todo> todos = new ObservableList();
   String title;
   TodoCategory(this.title);
 }
 
 class AppState {
-  ObservableList<TodoCategory> categories = new List();
+  ObservableList<TodoCategory> categories = new ObservableList();
 }

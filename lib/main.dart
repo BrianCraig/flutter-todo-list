@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/model/model.dart';
+import 'package:todo_list/model/bloc.dart';
 
 void main() => runApp(MyApp());
 
@@ -28,6 +29,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<Todo> _todos = List();
+  BlocState state = mockedBlocState();
 
   void refreshPls() {
     setState(() {});
@@ -46,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   List<Widget> _todosWidgets() =>
-      _todos.map((Todo todo) => Text(todo.text)).toList();
+      this.state.appState.categories.map((TodoCategory category) => TodoCard(category: category)).toList();
 
   @override
   Widget build(BuildContext context) {
@@ -64,10 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],),
       ),
-      body: TodoContainer([
-        TodoCard(_todos),
-        TodoCard(_todos),
-      ]),
+      body: TodoContainer(_todosWidgets()),
       floatingActionButton: NewTodoButton(_addTodo),
     );
   }
@@ -102,9 +101,9 @@ class TodoContainer extends StatelessWidget {
 }
 
 class TodoCard extends StatelessWidget {
-  final List<Todo> _todos;
+  final TodoCategory category;
 
-  TodoCard(this._todos);
+  TodoCard({Key key, this.category}): super(key: key);
 
   @override
   Widget build(BuildContext context) =>
@@ -114,10 +113,10 @@ class TodoCard extends StatelessWidget {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 8.0, 0, 0),
-            child: TodoCardBody(_todos),
+            child: TodoCardBody(category.todos),
           ),
           Positioned(
-            child: TodoCardLabel(),
+            child: TodoCardLabel(title: category.title),
             top: 0,
             left: 16,
           )
@@ -127,8 +126,11 @@ class TodoCard extends StatelessWidget {
 }
 
 class TodoCardLabel extends StatelessWidget {
+  final String title;
+
   const TodoCardLabel({
     Key key,
+    this.title
   }) : super(key: key);
 
   @override
@@ -136,7 +138,7 @@ class TodoCardLabel extends StatelessWidget {
     return DecoratedBox(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Text("TO DO",
+        child: Text(this.title,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,

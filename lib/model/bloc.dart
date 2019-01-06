@@ -23,10 +23,10 @@ BlocState mockedBlocState () {
   mock.appState.categories.add(mainCategory);
 
   final familyCategory = TodoCategory("Family Task");
-  mainCategory.todos.add(Todo("Visit Grandparents"));
+  familyCategory.todos.add(Todo("Visit Grandparents"));
   var cakeTodo = Todo("Make a cake");
   cakeTodo.toggle();
-  mainCategory.todos.add(cakeTodo);
+  familyCategory.todos.add(cakeTodo);
   mock.appState.categories.add(familyCategory);
 
   return mock;
