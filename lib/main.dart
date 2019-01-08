@@ -138,7 +138,6 @@ class TodoCardLabel extends StatelessWidget {
   }
 }
 
-@Padding(padding: EdgeInsets.all(10))
 class TodoCardBody extends StatelessWidget {
   final List<Todo> _todos;
   TodoCardBody(this._todos);
@@ -150,7 +149,8 @@ class TodoCardBody extends StatelessWidget {
         padding: EdgeInsets.fromLTRB(0, DefaultStyle.sizeUnit() * 4, 0, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: _todos.map((Todo todo) => TodoCardBodyItem(todo)).toList(),
+          children: []..addAll(_todos.map((Todo todo) => TodoCardBodyItem(todo)))
+            ..add(NewTodoForm()),
         ),
       ),
       color: Colors.white,
@@ -177,12 +177,7 @@ class TodoCardBodyItem extends StatelessWidget {
             children: [
               Icon(Icons.keyboard_arrow_right),
               Expanded(
-                child: Text(_todo.text,
-                  style: TextStyle(
-                    decoration: (_todo.done ? TextDecoration.combine(
-                      [TextDecoration.lineThrough]) : null)
-                  ),
-                ),
+                child: TodoCardBodyItemName(todo: _todo)
               ),
               GestureDetector(
                 onTap: ToggleDoneTodo,
@@ -193,5 +188,83 @@ class TodoCardBodyItem extends StatelessWidget {
         );
       }
     );
+  }
+}
+
+class TodoCardBodyItemName extends StatefulWidget {
+  final Todo todo;
+
+  const TodoCardBodyItemName({
+    Key key,
+    this.todo
+  }) : super(key: key);
+
+  @override
+  _TodoCardBodyItemNameState createState() => _TodoCardBodyItemNameState();
+}
+
+class _TodoCardBodyItemNameState extends State<TodoCardBodyItemName> {
+  bool isEditing = false;
+
+  final myController = TextEditingController();
+
+  void onChange() {
+    widget.todo.text = myController.text;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    myController.text = widget.todo.text;
+    myController.addListener(onChange);
+  }
+
+  @override
+  void dispose() {
+    myController.dispose();
+    super.dispose();
+  }
+
+  void toggleEditing() {
+    setState(() {
+      isEditing = !isEditing;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if(isEditing) {
+      return TextField(
+        onEditingComplete: toggleEditing,
+        controller: myController,
+        style: TextStyle(
+          fontSize: 14,
+          color: Colors.black,
+        ),
+        autofocus: true,
+      );
+    }
+    return GestureDetector(
+      onTap: toggleEditing,
+      child: Text(widget.todo.text,
+        style: TextStyle(
+          decoration: (widget.todo.done ? TextDecoration.combine(
+            [TextDecoration.lineThrough]) : null)
+        ),
+      )
+    );
+  }
+}
+
+
+class NewTodoForm extends StatefulWidget {
+  @override
+  _NewTodoFormState createState() => _NewTodoFormState();
+}
+
+class _NewTodoFormState extends State<NewTodoForm> {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }
