@@ -1,11 +1,19 @@
 import "package:observable/observable.dart";
 
-class Todo {
-  bool done = false;
+class Todo extends PropertyChangeNotifier{
+
+  bool _done = false;
+
+  get done => _done;
+  set done(bool newValue) {
+    bool oldValue = _done;
+    _done = newValue;
+    notifyPropertyChange(#value, oldValue, newValue);
+  }
   String text;
 
   Todo(String name){
-     this.text = name;
+    this.text = name;
   }
 
   void toggle(){

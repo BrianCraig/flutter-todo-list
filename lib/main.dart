@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:todo_list/model/model.dart';
 import 'package:todo_list/model/bloc.dart';
+import "package:observable/observable.dart";
+
 
 void main() => runApp(MyApp());
 
@@ -125,6 +127,7 @@ class TodoCard extends StatelessWidget {
     );
 }
 
+
 class TodoCardLabel extends StatelessWidget {
   final String title;
 
@@ -190,24 +193,31 @@ class TodoCardBodyItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: [
-          Icon(Icons.keyboard_arrow_right),
-          Expanded(
-            child:Text(_todo.text,
-              style: TextStyle(
-                decoration: (_todo.done ? TextDecoration.combine([TextDecoration.lineThrough]) : null)
+    return StreamBuilder<List<ChangeRecord>>(
+      stream: _todo.changes,
+      builder: (BuildContext context, AsyncSnapshot<List<ChangeRecord>> snapshot) {
+        print(snapshot);
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Icon(Icons.keyboard_arrow_right),
+              Expanded(
+                child: Text(_todo.text,
+                  style: TextStyle(
+                      decoration: (_todo.done ? TextDecoration.combine(
+                          [TextDecoration.lineThrough]) : null)
+                  ),
+                ),
               ),
-            ),
+              GestureDetector(
+                  onTap: ToggleDoneTodo,
+                  child: Icon(Icons.done)
+              ),
+            ],
           ),
-          GestureDetector(
-            onTap: ToggleDoneTodo,
-            child: Icon(Icons.done)
-          ),
-        ],
-      ),
+        );
+      }
     );
   }
 }

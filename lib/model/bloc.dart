@@ -31,3 +31,4 @@ BlocState mockedBlocState () {
 
   return mock;
 }
+
