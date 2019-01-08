@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todo_list/model/bloc.dart';
 import 'package:todo_list/model/model.dart';
 import "package:observable/observable.dart";
+import 'dart:async';
 
 import "./ui/style_components.dart";
 import './ui/style_constants.dart';
@@ -207,6 +208,7 @@ class _TodoCardBodyItemNameState extends State<TodoCardBodyItemName> {
   bool isEditing = false;
 
   final myController = TextEditingController();
+  final focusNode = FocusNode();
 
   void onChange() {
     widget.todo.text = myController.text;
@@ -217,11 +219,17 @@ class _TodoCardBodyItemNameState extends State<TodoCardBodyItemName> {
     super.initState();
     myController.text = widget.todo.text;
     myController.addListener(onChange);
+    focusNode.addListener(() {
+      if(!focusNode.hasFocus && isEditing){
+        toggleEditing();
+      }
+    });
   }
 
   @override
   void dispose() {
     myController.dispose();
+    focusNode.dispose();
     super.dispose();
   }
 
@@ -231,17 +239,22 @@ class _TodoCardBodyItemNameState extends State<TodoCardBodyItemName> {
     });
   }
 
+  Future<void> requestContext(BuildContext context) async {
+    FocusScope.of(context).requestFocus(focusNode);
+  }
+
   @override
   Widget build(BuildContext context) {
+    requestContext(context);
     if(isEditing) {
       return TextField(
         onEditingComplete: toggleEditing,
         controller: myController,
+        focusNode: focusNode,
         style: TextStyle(
           fontSize: 14,
           color: Colors.black,
         ),
-        autofocus: true,
       );
     }
     return GestureDetector(

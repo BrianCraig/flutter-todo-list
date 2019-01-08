@@ -24,7 +24,7 @@ BlocState mockedBlocState () {
 
   final familyCategory = TodoCategory("Family Task");
   familyCategory.todos.add(Todo("Visit Grandparents"));
-  var cakeTodo = Todo("Make a cake");
+  var cakeTodo = Todo("Make a 🍰");
   cakeTodo.toggle();
   familyCategory.todos.add(cakeTodo);
   mock.appState.categories.add(familyCategory);
