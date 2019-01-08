@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:todo_list/model/model.dart';
 import 'package:todo_list/model/bloc.dart';
+import 'package:todo_list/model/model.dart';
 import "package:observable/observable.dart";
 
+import "./ui/style_components.dart";
+import './ui/style_constants.dart';
 
 void main() => runApp(MyApp());
 
@@ -30,22 +32,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Todo> _todos = List();
   BlocState state = mockedBlocState();
 
   void refreshPls() {
     setState(() {});
   }
 
-  void clearPls() {
-    setState(() {
-      _todos = List();
-    });
-  }
-
   void _addTodo() {
     setState(() {
-      _todos.add(Todo("Todo name"));
+      state.appState.categories.first.todos.add(Todo("Todo name"));
     });
   }
 
@@ -61,10 +56,6 @@ class _MyHomePageState extends State<MyHomePage> {
           IconButton(
             icon: Icon(Icons.refresh),
             onPressed: refreshPls,
-          ),
-          IconButton(
-            icon: Icon(Icons.delete_forever),
-            onPressed: clearPls,
           ),
         ],),
       ),
@@ -138,47 +129,31 @@ class TodoCardLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(this.title,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-            color: Colors.white,
-          ),
-        ),
-      ),
-      decoration: BoxDecoration(
-        color: Colors.teal.shade900,
-        borderRadius: BorderRadius.all(
-          Radius.circular(4)
-        )
+    return BoxStyledComponent(
+      color: Colors.teal.shade900,
+      child: TitleStyledComponent(
+        text: this.title,
       ),
     );
   }
 }
 
+@Padding(padding: EdgeInsets.all(10))
 class TodoCardBody extends StatelessWidget {
   final List<Todo> _todos;
   TodoCardBody(this._todos);
   @override
 
   Widget build(BuildContext context) {
-    return DecoratedBox(
+    return BoxStyledComponent(
       child: Padding(
-        padding: EdgeInsets.fromLTRB(4, 32, 4, 4),
+        padding: EdgeInsets.fromLTRB(0, DefaultStyle.sizeUnit() * 4, 0, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: _todos.map((Todo todo) => TodoCardBodyItem(todo)).toList(),
         ),
       ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(
-          Radius.circular(4)
-        ),
-      ),
+      color: Colors.white,
     );
   }
 }
@@ -196,7 +171,6 @@ class TodoCardBodyItem extends StatelessWidget {
     return StreamBuilder<List<ChangeRecord>>(
       stream: _todo.changes,
       builder: (BuildContext context, AsyncSnapshot<List<ChangeRecord>> snapshot) {
-        print(snapshot);
         return Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
@@ -205,14 +179,14 @@ class TodoCardBodyItem extends StatelessWidget {
               Expanded(
                 child: Text(_todo.text,
                   style: TextStyle(
-                      decoration: (_todo.done ? TextDecoration.combine(
-                          [TextDecoration.lineThrough]) : null)
+                    decoration: (_todo.done ? TextDecoration.combine(
+                      [TextDecoration.lineThrough]) : null)
                   ),
                 ),
               ),
               GestureDetector(
-                  onTap: ToggleDoneTodo,
-                  child: Icon(Icons.done)
+                onTap: ToggleDoneTodo,
+                child: Icon(Icons.done)
               ),
             ],
           ),
