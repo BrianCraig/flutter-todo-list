@@ -113,6 +113,11 @@ class TodoCard extends StatelessWidget {
             child: TodoCardLabel(title: category.title),
             top: 0,
             left: 16,
+          ),
+          Positioned(
+            right: DefaultStyle.sizeUnit(),
+            top: DefaultStyle.sizeUnit(),
+            child: TodoCardAddButton(onClick: () {category.todos.add(Todo("New ToDo"));},),
           )
         ],
       ),
@@ -140,21 +145,24 @@ class TodoCardLabel extends StatelessWidget {
 }
 
 class TodoCardBody extends StatelessWidget {
-  final List<Todo> _todos;
+  final ObservableList<Todo> _todos;
   TodoCardBody(this._todos);
   @override
 
   Widget build(BuildContext context) {
-    return BoxStyledComponent(
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(0, DefaultStyle.sizeUnit() * 4, 0, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: []..addAll(_todos.map((Todo todo) => TodoCardBodyItem(todo)))
-            ..add(NewTodoForm()),
+    return StreamBuilder<dynamic>(
+      stream: _todos.changes,
+      builder: (BuildContext _b, AsyncSnapshot<dynamic> _s) => BoxStyledComponent(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(0, DefaultStyle.sizeUnit() * 6, 0, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: []..addAll(_todos.map((Todo todo) => TodoCardBodyItem(todo)))
+              ..add(NewTodoForm()),
+          ),
         ),
+        color: Colors.white,
       ),
-      color: Colors.white,
     );
   }
 }
@@ -279,5 +287,22 @@ class _NewTodoFormState extends State<NewTodoForm> {
   @override
   Widget build(BuildContext context) {
     return Container();
+  }
+}
+
+class TodoCardAddButton extends StatelessWidget {
+  final Function onClick;
+
+  const TodoCardAddButton({
+    Key key,
+    @required this.onClick,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.add_circle_outline),
+      onPressed: this.onClick,
+    );
   }
 }

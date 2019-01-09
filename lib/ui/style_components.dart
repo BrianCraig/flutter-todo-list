@@ -48,3 +48,25 @@ class TitleStyledComponent extends StatelessWidget {
     );
   }
 }
+
+class RefreshOnMessage extends StatelessWidget {
+  final Widget child;
+  final Stream<dynamic> stream;
+
+  const RefreshOnMessage({
+    Key key,
+    @required this.stream,
+    @required this.child,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<dynamic>(
+      builder: (BuildContext _b, AsyncSnapshot<dynamic> _a) {
+        print(_a);
+        return child;
+      },
+      stream: this.stream,
+    );
+  }
+}
