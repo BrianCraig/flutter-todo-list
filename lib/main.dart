@@ -1,8 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import "package:observable/observable.dart";
 import 'package:todo_list/model/bloc.dart';
 import 'package:todo_list/model/model.dart';
-import "package:observable/observable.dart";
-import 'dart:async';
 
 import "./ui/style_components.dart";
 import './ui/style_constants.dart';
@@ -45,20 +46,26 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  List<Widget> _todosWidgets() =>
-      this.state.appState.categories.map((TodoCategory category) => TodoCard(category: category)).toList();
+  List<Widget> _todosWidgets() => this
+      .state
+      .appState
+      .categories
+      .map((TodoCategory category) => TodoCard(category: category))
+      .toList();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(children: [
-          Text(widget.title),
-          IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: refreshPls,
-          ),
-        ],),
+        title: Row(
+          children: [
+            Text(widget.title),
+            IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: refreshPls,
+            ),
+          ],
+        ),
       ),
       body: TodoContainer(_todosWidgets()),
       floatingActionButton: NewTodoButton(_addTodo),
@@ -72,36 +79,40 @@ class NewTodoButton extends StatelessWidget {
   NewTodoButton(this._onClick);
 
   @override
-  Widget build(BuildContext context) => FloatingActionButton(
-    onPressed: _onClick,
-    tooltip: 'Increment',
-    child: Icon(Icons.add),
-  );
+  Widget build(BuildContext context) {
+    return FloatingActionButton(
+      onPressed: _onClick,
+      tooltip: 'Increment',
+      child: Icon(Icons.add),
+    );
+  }
 }
 
 class TodoContainer extends StatelessWidget {
   final List<Widget> _children;
+
   TodoContainer(this._children);
 
   @override
-  Widget build(BuildContext context) =>
-    Container(
+  Widget build(BuildContext context) {
+    return Container(
       child: ListView(
         children: _children,
         padding: EdgeInsets.all(16),
       ),
       color: Colors.black12,
     );
+  }
 }
 
 class TodoCard extends StatelessWidget {
   final TodoCategory category;
 
-  TodoCard({Key key, this.category}): super(key: key);
+  TodoCard({Key key, this.category}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) =>
-    Padding(
+  Widget build(BuildContext context) {
+    return Padding(
       padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
       child: Stack(
         children: <Widget>[
@@ -117,21 +128,22 @@ class TodoCard extends StatelessWidget {
           Positioned(
             right: DefaultStyle.sizeUnit(),
             top: DefaultStyle.sizeUnit(),
-            child: TodoCardAddButton(onClick: () {category.todos.add(Todo("New ToDo"));},),
+            child: TodoCardAddButton(
+              onClick: () {
+                category.todos.add(Todo("New ToDo"));
+              },
+            ),
           )
         ],
       ),
     );
+  }
 }
-
 
 class TodoCardLabel extends StatelessWidget {
   final String title;
 
-  const TodoCardLabel({
-    Key key,
-    this.title
-  }) : super(key: key);
+  const TodoCardLabel({Key key, this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -146,29 +158,34 @@ class TodoCardLabel extends StatelessWidget {
 
 class TodoCardBody extends StatelessWidget {
   final ObservableList<Todo> _todos;
-  TodoCardBody(this._todos);
-  @override
 
+  TodoCardBody(this._todos);
+
+  @override
   Widget build(BuildContext context) {
     return StreamBuilder<dynamic>(
       stream: _todos.changes,
-      builder: (BuildContext _b, AsyncSnapshot<dynamic> _s) => BoxStyledComponent(
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(0, DefaultStyle.sizeUnit() * 6, 0, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: []..addAll(_todos.map((Todo todo) => TodoCardBodyItem(todo)))
-              ..add(NewTodoForm()),
+      builder: (BuildContext _b, AsyncSnapshot<dynamic> _s) =>
+          BoxStyledComponent(
+            child: Padding(
+              padding:
+                  EdgeInsets.fromLTRB(0, DefaultStyle.sizeUnit() * 6, 0, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: []
+                  ..addAll(_todos.map((Todo todo) => TodoCardBodyItem(todo)))
+                  ..add(NewTodoForm()),
+              ),
+            ),
+            color: Colors.white,
           ),
-        ),
-        color: Colors.white,
-      ),
     );
   }
 }
 
 class TodoCardBodyItem extends StatelessWidget {
   final Todo _todo;
+
   TodoCardBodyItem(this._todo);
 
   void ToggleDoneTodo() {
@@ -179,23 +196,19 @@ class TodoCardBodyItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder<List<ChangeRecord>>(
       stream: _todo.changes,
-      builder: (BuildContext context, AsyncSnapshot<List<ChangeRecord>> snapshot) {
+      builder:
+          (BuildContext context, AsyncSnapshot<List<ChangeRecord>> snapshot) {
         return Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
               Icon(Icons.keyboard_arrow_right),
-              Expanded(
-                child: TodoCardBodyItemName(todo: _todo)
-              ),
-              GestureDetector(
-                onTap: ToggleDoneTodo,
-                child: Icon(Icons.done)
-              ),
+              Expanded(child: TodoCardBodyItemName(todo: _todo)),
+              GestureDetector(onTap: ToggleDoneTodo, child: Icon(Icons.done)),
             ],
           ),
         );
-      }
+      },
     );
   }
 }
@@ -203,10 +216,7 @@ class TodoCardBodyItem extends StatelessWidget {
 class TodoCardBodyItemName extends StatefulWidget {
   final Todo todo;
 
-  const TodoCardBodyItemName({
-    Key key,
-    this.todo
-  }) : super(key: key);
+  const TodoCardBodyItemName({Key key, this.todo}) : super(key: key);
 
   @override
   _TodoCardBodyItemNameState createState() => _TodoCardBodyItemNameState();
@@ -228,7 +238,7 @@ class _TodoCardBodyItemNameState extends State<TodoCardBodyItemName> {
     myController.text = widget.todo.text;
     myController.addListener(onChange);
     focusNode.addListener(() {
-      if(!focusNode.hasFocus && isEditing){
+      if (!focusNode.hasFocus && isEditing) {
         toggleEditing();
       }
     });
@@ -254,7 +264,7 @@ class _TodoCardBodyItemNameState extends State<TodoCardBodyItemName> {
   @override
   Widget build(BuildContext context) {
     requestContext(context);
-    if(isEditing) {
+    if (isEditing) {
       return TextField(
         onEditingComplete: toggleEditing,
         controller: myController,
@@ -267,16 +277,17 @@ class _TodoCardBodyItemNameState extends State<TodoCardBodyItemName> {
     }
     return GestureDetector(
       onTap: toggleEditing,
-      child: Text(widget.todo.text,
+      child: Text(
+        widget.todo.text,
         style: TextStyle(
-          decoration: (widget.todo.done ? TextDecoration.combine(
-            [TextDecoration.lineThrough]) : null)
+          decoration: widget.todo.done
+              ? TextDecoration.combine([TextDecoration.lineThrough])
+              : null,
         ),
-      )
+      ),
     );
   }
 }
-
 
 class NewTodoForm extends StatefulWidget {
   @override

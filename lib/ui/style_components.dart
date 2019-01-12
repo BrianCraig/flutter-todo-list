@@ -12,19 +12,19 @@ class BoxStyledComponent extends StatelessWidget {
     this.color,
   }) : super(key: key);
 
-
   @override
-  Widget build(BuildContext context) =>
-    DecoratedBox(
+  Widget build(BuildContext context) {
+    return DecoratedBox(
       child: Padding(
         padding: DefaultStyle.padding(),
         child: this.child,
       ),
       decoration: BoxDecoration(
-          color: this.color,
-          borderRadius: DefaultStyle.border(),
+        color: this.color,
+        borderRadius: DefaultStyle.border(),
       ),
     );
+  }
 }
 
 class TitleStyledComponent extends StatelessWidget {
@@ -39,7 +39,8 @@ class TitleStyledComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(this.text,
+    return Text(
+      this.text,
       style: TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 16,

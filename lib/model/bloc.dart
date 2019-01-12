@@ -4,6 +4,7 @@ import './model.dart';
 
 class BlocState {
   AppState appState = AppState();
+
   // add new
   Stream<List<ChangeRecord>> changes;
 
@@ -12,8 +13,7 @@ class BlocState {
   }
 }
 
-
-BlocState mockedBlocState () {
+BlocState mockedBlocState() {
   BlocState mock = BlocState();
 
   final mainCategory = TodoCategory("To do");
@@ -31,4 +31,3 @@ BlocState mockedBlocState () {
 
   return mock;
 }
-
