@@ -117,7 +117,7 @@ class TodoCard extends StatelessWidget {
       child: Stack(
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.fromLTRB(0, 8.0, 0, 0),
+            padding: EdgeInsets.fromLTRB(0, DefaultStyle.sizeUnit()*2, 0, 0),
             child: TodoCardBody(category.todos),
           ),
           Positioned(
@@ -173,7 +173,7 @@ class TodoCardBody extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: []
-                  ..addAll(_todos.map((Todo todo) => TodoCardBodyItem(todo)))
+                  ..addAll(_todos.map((Todo todo) => TodoCardBodyItem(todo: todo, onRemove: () => _todos.remove(todo),)))
                   ..add(NewTodoForm()),
               ),
             ),
@@ -184,26 +184,35 @@ class TodoCardBody extends StatelessWidget {
 }
 
 class TodoCardBodyItem extends StatelessWidget {
-  final Todo _todo;
+  final Todo todo;
+  final Function onRemove;
 
-  TodoCardBodyItem(this._todo);
+
+  TodoCardBodyItem({
+    Key key,
+    @required this.todo,
+    @required this.onRemove,
+  }): super(key: key);
 
   void ToggleDoneTodo() {
-    this._todo.toggle();
+    this.todo.toggle();
   }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<ChangeRecord>>(
-      stream: _todo.changes,
+      stream: todo.changes,
       builder:
           (BuildContext context, AsyncSnapshot<List<ChangeRecord>> snapshot) {
         return Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
-              Icon(Icons.keyboard_arrow_right),
-              Expanded(child: TodoCardBodyItemName(todo: _todo)),
+              Expanded(child: TodoCardBodyItemName(todo: todo)
+              ),
+              GestureDetector(
+                  onTap: onRemove,
+                  child: Icon(Icons.delete)),
               GestureDetector(onTap: ToggleDoneTodo, child: Icon(Icons.done)),
             ],
           ),
