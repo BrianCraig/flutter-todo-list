@@ -26,6 +26,8 @@ class TodoCategory {
   ObservableList<Todo> todos = new ObservableList();
   String title;
 
+  get maxTitleLength => 50;
+
   TodoCategory(this.title);
 }
 

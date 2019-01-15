@@ -106,7 +106,7 @@ class TodoCard extends StatelessWidget {
             child: TodoCardBody(category.todos),
           ),
           Positioned(
-            child: TodoCardLabel(title: category.title),
+            child: TodoCardLabel(category: category),
             top: 0,
             left: 16,
           ),
@@ -126,21 +126,21 @@ class TodoCard extends StatelessWidget {
 }
 
 class TodoCardLabel extends StatelessWidget {
-  final String title;
+  final TodoCategory category;
 
-  const TodoCardLabel({Key key, this.title}) : super(key: key);
+  const TodoCardLabel({Key key, this.category}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       child: BoxStyledComponent(
         child: TitleStyledComponent(
-          text: this.title,
+          text: this.category.title,
         ),
         color: Colors.teal.shade900,
       ),
       onDoubleTap: () {
-        goToCategory(context);
+        goToCategory(context, category);
       },
     );
   }
