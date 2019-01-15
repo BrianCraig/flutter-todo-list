@@ -1,4 +1,6 @@
 import "package:observable/observable.dart";
+import 'package:scoped_model/scoped_model.dart';
+
 
 class Todo extends PropertyChangeNotifier {
   bool _done = false;
@@ -31,6 +33,6 @@ class TodoCategory {
   TodoCategory(this.title);
 }
 
-class AppState {
+class AppState extends Model {
   ObservableList<TodoCategory> categories = new ObservableList();
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import '../actions.dart';
 import '../model/model.dart';
@@ -37,9 +38,14 @@ class _FormKeyState extends State<FormKey> {
 
   @override
   Widget build(BuildContext context) {
-    return CategoryForm(
-      formKey: _formKey,
-      category: widget.category,
+    return ScopedModelDescendant<AppState>(
+      builder: (context, child, appState) {
+        return CategoryForm (
+          formKey: _formKey,
+          category: widget.category,
+          onDelete: () { appState.categories.remove(widget.category); }
+        );
+      },
     );
   }
 }
@@ -48,8 +54,9 @@ class CategoryForm extends StatefulWidget {
 
   final GlobalKey<FormState> formKey;
   final TodoCategory category;
+  final Function onDelete;
 
-  CategoryForm({Key key, this.formKey, this.category}) : super(key: key);
+  CategoryForm({Key key, this.formKey, this.category, this.onDelete}) : super(key: key);
 
   @override
   _CategoryFormState createState() => _CategoryFormState();
@@ -63,6 +70,11 @@ class _CategoryFormState extends State<CategoryForm> {
 
   void submit(BuildContext context) {
     widget.category.title = this.title;
+    goBack(context);
+  }
+
+  void delete(BuildContext context) {
+    widget.onDelete();
     goBack(context);
   }
 
@@ -89,12 +101,13 @@ class _CategoryFormState extends State<CategoryForm> {
               children: [
                 new RaisedButton(
                   child: Text('Delete'),
-                  onPressed: () {},
+                  onPressed: () => delete(context),
                   color: Theme.of(context).accentColor,
                 ),
                 new RaisedButton(
                   child: Text('Save'),
                   onPressed: () => submit(context),
+                  color: Theme.of(context).accentColor,
                 ),
               ],
             ),

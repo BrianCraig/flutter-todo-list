@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import "package:observable/observable.dart";
-import 'package:todo_list/model/bloc.dart';
 import 'package:todo_list/model/model.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import '../actions.dart';
 import "../ui/style_components.dart";
@@ -19,41 +19,29 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  BlocState state = mockedBlocState();
-
-  void refreshPls() {
-    setState(() {});
-  }
-
   void _addTodo() {
     setState(() {
-      state.appState.categories.first.todos.add(Todo("Todo name"));
+      //TODO add new category
     });
   }
 
-  List<Widget> _todosWidgets() => this
-      .state
-      .appState
+  List<Widget> _todosWidgets(AppState appState) => appState
       .categories
       .map((TodoCategory category) => TodoCard(category: category))
       .toList();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Text(widget.title),
-            IconButton(
-              icon: Icon(Icons.refresh),
-              onPressed: refreshPls,
-            ),
-          ],
-        ),
-      ),
-      body: TodoContainer(_todosWidgets()),
-      floatingActionButton: NewTodoButton(_addTodo),
+    return ScopedModelDescendant<AppState>(
+      builder:(context, child, appState) {
+        return Scaffold (
+          appBar: AppBar(
+            title: Text(widget.title),
+          ),
+          body: TodoContainer(_todosWidgets(appState)),
+          floatingActionButton: NewTodoButton(_addTodo),
+        );
+      },
     );
   }
 }
