@@ -34,7 +34,7 @@ class FormKey extends StatefulWidget {
 }
 
 class _FormKeyState extends State<FormKey> {
-  final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {

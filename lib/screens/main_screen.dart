@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import "package:observable/observable.dart";
-import 'package:todo_list/model/model.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:todo_list/model/model.dart';
 
 import '../actions.dart';
 import "../ui/style_components.dart";
@@ -25,16 +25,15 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  List<Widget> _todosWidgets(AppState appState) => appState
-      .categories
+  List<Widget> _todosWidgets(AppState appState) => appState.categories
       .map((TodoCategory category) => TodoCard(category: category))
       .toList();
 
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<AppState>(
-      builder:(context, child, appState) {
-        return Scaffold (
+      builder: (context, child, appState) {
+        return Scaffold(
           appBar: AppBar(
             title: Text(widget.title),
           ),
@@ -191,6 +190,12 @@ class TodoCardBodyItem extends StatelessWidget {
               Expanded(child: TodoCardBodyItemName(todo: todo)),
               GestureDetector(onTap: onRemove, child: Icon(Icons.delete)),
               GestureDetector(onTap: ToggleDoneTodo, child: Icon(Icons.done)),
+              GestureDetector(
+                onTap: () {
+                  goToTodo(context, todo);
+                },
+                child: Icon(Icons.edit),
+              ),
             ],
           ),
         );

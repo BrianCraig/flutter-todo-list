@@ -13,6 +13,8 @@ class Todo extends PropertyChangeNotifier {
     notifyPropertyChange(#value, oldValue, newValue);
   }
 
+  get maxTextLength => 50;
+
   String text;
 
   Todo(String name) {
