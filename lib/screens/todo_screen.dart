@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:scoped_model/scoped_model.dart';
 
 import '../actions.dart';
 import '../model/model.dart';
 import '../ui/style_constants.dart';
 
 class TodoScreen extends StatelessWidget {
-
   final Todo todo;
+  final Function onDelete, onSave;
+  final bool hasDelete;
 
-  TodoScreen({Key key, this.todo}) : super(key: key);
+  TodoScreen({Key key, this.todo, this.onDelete, this.onSave, this.hasDelete = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,28 +17,29 @@ class TodoScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text("Todo"),
       ),
-      body: TodoForm(todo: todo),
+      body: TodoForm(todo: todo, onDelete: onDelete, onSave: onSave, hasDelete: hasDelete),
     );
   }
 }
 
 class TodoForm extends StatefulWidget {
-
   final Todo todo;
+  final Function onDelete, onSave;
+  final bool hasDelete;
 
-  TodoForm({Key key, this.todo}) : super(key: key);
+  TodoForm({Key key, this.todo, this.onDelete, this.onSave, this.hasDelete}) : super(key: key);
 
   @override
   _TodoFormState createState() => _TodoFormState();
 }
 
 class _TodoFormState extends State<TodoForm> {
-
   final GlobalKey<FormState> _formKey = GlobalKey();
   String _text;
   bool _done;
 
   get done => _done ?? widget.todo.done;
+
   get text => _text ?? widget.todo.text;
 
   @override
@@ -51,12 +52,21 @@ class _TodoFormState extends State<TodoForm> {
           child: Column(
             children: <Widget>[
               buildText(),
-              Checkbox(
-                value: this.done,
-                onChanged: (bool done) {
-                  _done = done;
-                  setState(() {});
-                },
+              Padding(
+                padding: DefaultStyle.padding(),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Already done"),
+                    Switch(
+                      value: this.done,
+                      onChanged: (bool done) {
+                        _done = done;
+                        setState(() {});
+                      },
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -83,21 +93,30 @@ class _TodoFormState extends State<TodoForm> {
   Widget buildButtons(BuildContext context) {
     return ButtonBar(
       children: <Widget>[
-        new RaisedButton(
-          child: Text('Delete'),
-          onPressed:() => goBack(context),
-          color: Theme.of(context).accentColor,
-        ),
+        widget.hasDelete ? buildDeleteButton(context) : Container(),
         new RaisedButton(
           child: Text('Save'),
           onPressed: () {
             widget.todo.text = this.text;
             widget.todo.done = this.done;
+            widget.onSave();
             goBack(context);
           },
           color: Theme.of(context).accentColor,
         ),
       ],
     );
+  }
+
+  RaisedButton buildDeleteButton(BuildContext context) {
+    return new RaisedButton(
+        child: Text('Delete'),
+        onPressed: () {
+          widget.onDelete();
+          goBack(context);
+
+          },
+          color: Theme.of(context).accentColor,
+      );
   }
 }
